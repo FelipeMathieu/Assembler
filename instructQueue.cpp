@@ -36,3 +36,19 @@ bool instructQueue::setQueue(Interpretador *it, adressDataBus *aDB, Memoria *m) 
 	}
 	return true;
 }
+
+bool instructQueue::isEmpty() {
+	int i = 0;
+	for (int j = 0; j < this->itQueue.size(); j++) {
+		if (this->itQueue.at(j) == "") {
+			i += 1;
+		}
+	}
+
+	if (i >= this->itQueue.size()) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}

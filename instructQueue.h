@@ -24,5 +24,15 @@ public:
 		this->itQueue.push_back("");
 		return aux;
 	};
+	void setControllerQueue(int i) {
+		this->controllerQueue = i;
+	};
+	int queueSize() {
+		return this->itQueue.size();
+	};
+	int getControllerQueue() {
+		return this->controllerQueue;
+	}
+	bool isEmpty();
 };
 

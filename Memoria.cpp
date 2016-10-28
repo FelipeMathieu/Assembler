@@ -5,7 +5,7 @@ Memoria::Memoria(Dicionario *D)
 	this->memory = *new vector<pair<string, pair<string, string>>>(100);
 	int i = 0;
 
-	while(i < 32) {
+	while (i < 32) {
 		if (i < 20) {
 			for (auto &x : D->getInstrucoes()) {
 				this->memory.at(i).first = this->DecToBin(i);
@@ -17,6 +17,7 @@ Memoria::Memoria(Dicionario *D)
 			for (auto &x : D->getRegistradores()) {
 				this->memory.at(i).first = this->DecToBin(i);
 				this->memory.at(i).second.first = x.second;
+				this->memory.at(i).second.first = "0";
 				i++;
 			}
 		}
@@ -24,6 +25,7 @@ Memoria::Memoria(Dicionario *D)
 			for (auto &x : D->getFlags()) {
 				this->memory.at(i).first = this->DecToBin(i);
 				this->memory.at(i).second.first = x.second;
+				this->memory.at(i).second.first = "0";
 				i++;
 			}
 		}
@@ -89,7 +91,7 @@ string Memoria::getMemoryAdress(string value) {
 	return this->memory.at(j).first;
 }
 
-bool Memoria::setP(string value, string toP){
+bool Memoria::setP(string value, string toP) {
 	string i = "";
 	if (this->allocaMemoria(this->stringToHex(value))) {
 		i = this->getMemoryAdress(toP);
@@ -104,7 +106,7 @@ bool Memoria::setP(string value, string toP){
 	else {
 		cout << endl << "Erro ao criar ponteiro" << endl;
 		return false;
- 	}
+	}
 }
 
 string Memoria::stringToHex(const std::string& input)
@@ -134,6 +136,7 @@ bool Memoria::findInstruction(string element) {
 }
 
 string Memoria::getValue(string adress) {
+	string addresAux = "";
 	for (int i = 0; i < this->memory.size(); i++) {
 		if (this->memory.at(i).first == adress) {
 			return this->memory.at(i).second.first;
@@ -141,4 +144,56 @@ string Memoria::getValue(string adress) {
 		}
 	}
 	return "ERRO";
+}
+
+string Memoria::getPointerValue(string adress) {
+	string addresAux = "";
+	for (int i = 0; i < this->memory.size(); i++) {
+		if (this->memory.at(i).first == adress) {
+			if (this->memory.at(i).second.second == "") {
+				return this->memory.at(i).second.first;
+				break;
+			}
+			else {
+				addresAux = this->memory.at(i).second.second;
+				for (int j = 0; j < this->memory.size(); j++) {
+					if (this->memory.at(i).first == addresAux) {
+						return this->memory.at(i).second.first;
+						break;
+					}
+				}
+			}
+		}
+	}
+	return "ERRO";
+}
+
+void Memoria::setValue(string adress, string element) {
+	for (int i = 0; i < this->memory.size(); i++) {
+		if (this->memory.at(i).first == adress) {
+			this->memory.at(i).second.first = element;
+			return;
+		}
+	}
+}
+
+bool Memoria::isReserved(string adress) {
+	for (int i = 0; i < this->memory.size(); i++) {
+		if ((this->memory.at(i).first == adress || this->memory.at(i).first == adress) && i < 35) {
+			return true;
+			break;
+		}
+		else if ((this->memory.at(i).first == adress || this->memory.at(i).first == adress)) {
+			return false;
+		}
+	}
+}
+
+void Memoria::setReg(string reg, string value) {
+	for (int i = 0; i < 35; i++) {
+		if (this->memory.at(i).second.first == reg) {
+			this->memory.at(i).second.second = value;
+			break;
+		}
+	}
 }

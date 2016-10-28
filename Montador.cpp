@@ -267,6 +267,7 @@ void Montador::verifyCode(string nmArquivo, Memoria *M) {
 													auxMont_count.append("0");
 												}
 												auxMont_count = auxMont_count.append(memoryAdress);
+
 												monta << auxMont_count;
 											}
 										}
@@ -278,8 +279,8 @@ void Montador::verifyCode(string nmArquivo, Memoria *M) {
 												for (int l = 0; l < 16 - (auxMont.size() + this->mont.find(auxVector.at(i))->second.size()); l++) {
 													auxMont_count.append("0");
 												}
-												this->mont.find(auxVector.at(i))->second = auxMont_count.append(this->mont.find(auxVector.at(i))->second);
-												monta << this->mont.find(auxVector.at(i))->second;
+												auxMont_count = auxMont_count.append(this->mont.find(auxVector.at(i))->second);
+												monta << auxMont_count;
 											}
 										}
 									}

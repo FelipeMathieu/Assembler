@@ -34,5 +34,9 @@ public:
 	bool setP(string value, string toP);
 	bool findInstruction(string element);
 	string getValue(string adress);
+	void setValue(string adress, string element);
+	bool isReserved(string adress);
+	string getPointerValue(string adress);
+	void setReg(string reg, string value);
 };
 
