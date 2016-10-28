@@ -17,3 +17,12 @@ bool adressDataBus::sendAdress(string adress, Memoria *m) {
 		return false;
 	}
 }
+
+void adressDataBus::printAddressBus() {
+	cout << "Address Bus: ";
+	cout << this->dataBus << endl;
+}
+
+void adressDataBus::setDataBus(string value) {
+	this->dataBus = value;
+}

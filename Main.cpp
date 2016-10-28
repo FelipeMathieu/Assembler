@@ -6,6 +6,7 @@
 #include "Decoder.h"
 #include "busInt.h"
 #include "Registers.h"
+#include "ULA.h"
 
 void main() {
 	Dicionario *D = new Dicionario();
@@ -20,20 +21,19 @@ void main() {
 	ULA *ula = new ULA();
 
 	montador->verifyCode("Teste.cu", memoria);
-	montador->getMont();
-	memoria->getMemory();
 	it->storeObj("Assembly-Teste.cu", memoria);
 
 	iQ->setQueue(it, db, memoria);
 
 	system("cls");
 
+
 	while (it->getCodeOrder().size() - 1 >= iQ->getControllerQueue() ||  !iQ->isEmpty()) {
 		if (iQ->isEmpty()) {
 			iQ->setQueue(it, db, memoria);
 		}
 
-		dec->decodeElement(iQ->getFirst(), memoria, busI, Reg, ula);
+		dec->decodeElement(iQ->getFirst(), memoria, busI, Reg, ula, it, db, iQ);
 	}
 
 

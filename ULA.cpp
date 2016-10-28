@@ -16,23 +16,29 @@ void ULA::setTempReg2(string element) {
 	this->temporaryReg2 = element;
 }
 
-void ULA::add(string reg, string value, Memoria *m, Registers *r) {
-	int y = r->getRegisterValue(reg);
-	y += 1;
-	r->setRegisterValue(reg, this->DecToBin(y), m);
+void ULA::add(string reg, Memoria *m, Registers *r) {
+	int x = r->getRegisterValue(reg);
+	int y = this->bin2dec(this->temporaryReg2.c_str());
+	x = x + y;
+	r->setRegisterValue(reg, this->DecToBin(x), m);
 	cout << "ADD" << endl;
 }
 
-void ULA::sub(string reg, string value, Memoria *m, Registers *r) {
-	int y = r->getRegisterValue(reg);
-	if (y > 0) {
-		y -= 1;
+void ULA::sub(string reg, Memoria *m, Registers *r) {
+	int x = r->getRegisterValue(reg);
+	int y = this->bin2dec(this->temporaryReg2.c_str());
+	int result = 0;
+	result = x - y;
+	if (result > 0) {
+		r->setRegisterValue(reg, this->DecToBin(result), m);
+		cout << "SUB" << endl;
 	}
 	else {
-		y = 0;
+		result = 0;
+		r->setRegisterValue(reg, this->DecToBin(result), m);
+		cout << "SUB" << endl;
 	}
-	r->setRegisterValue(reg, this->DecToBin(y), m);
-	cout << "SUB" << endl;
+	
 }
 
 void ULA::mul(string reg, Memoria *m, Registers *r) {

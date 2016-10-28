@@ -6,6 +6,7 @@
 #include "Registers.h"
 #include "ULA.h"
 #include "busInt.h"
+#include "adressDataBus.h"
 
 class Decoder
 {
@@ -16,7 +17,7 @@ private:
 public:
 	Decoder();
 	~Decoder();
-	void decodeElement(string iq, Memoria *m, busInt *Dbus, Registers *Reg, ULA *ula);
+	void decodeElement(string iq, Memoria *m, busInt *Dbus, Registers *Reg, ULA *ula, Interpretador *it, adressDataBus *ad, instructQueue *q);
 	int bin2dec(const char* binary)
 	{
 		int len, dec = 0, i, exp;

@@ -17,8 +17,8 @@ public:
 
 	void setTempReg1(string element);
 	void setTempReg2(string element);
-	void add(string reg, string value, Memoria *m, Registers *r);
-	void sub(string reg, string value, Memoria *m, Registers *r);
+	void add(string reg, Memoria *m, Registers *r);
+	void sub(string reg, Memoria *m, Registers *r);
 	void mul(string reg, Memoria *m, Registers *r);
 	void div(string reg, Memoria *m, Registers *r);
 	void not(string reg, Memoria *m, Registers *r);

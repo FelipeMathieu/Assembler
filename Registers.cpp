@@ -68,6 +68,10 @@ void Registers::setZeroFlag(int value) {
 	this->flags["ZF"] = value;
 }
 
+int Registers::getFlagValue(string reg) {
+	return this->flags[reg];
+}
+
 
 void Registers::setCarryFlag(int value) {
 	this->flags["CF"] = value;

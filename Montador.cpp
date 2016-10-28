@@ -72,6 +72,9 @@ void Montador::verifyCode(string nmArquivo, Memoria *M) {
 									else if (auxMapFlags.find(auxString) != auxMapFlags.end()) {
 										this->mont[auxString] = auxMapFlags.find(auxString)->second;
 									}
+									else if (!this->isInteger(auxString)) {
+										this->mont[auxString] = auxString;
+									}
 									else {
 										this->mont[auxString] = "";
 									}
@@ -276,11 +279,22 @@ void Montador::verifyCode(string nmArquivo, Memoria *M) {
 												monta << this->mont.find(auxVector.at(i))->second;
 											}
 											else if (auxMont.size() + this->mont.find(auxVector.at(i))->second.size() < 16) {
-												for (int l = 0; l < 16 - (auxMont.size() + this->mont.find(auxVector.at(i))->second.size()); l++) {
-													auxMont_count.append("0");
+												if (this->isInteger(this->mont.find(auxVector.at(i))->second)) {
+													for (int l = 0; l < 16 - (auxMont.size() + this->mont.find(auxVector.at(i))->second.size()); l++) {
+														auxMont_count.append("0");
+													}
+													auxMont_count = auxMont_count.append(this->mont.find(auxVector.at(i))->second);
+													monta << auxMont_count;
+												} 
+												else {
+													M->allocaMemoria(this->stringToHex(this->mont.find(auxVector.at(i))->second));
+													for (int l = 0; l < 16 - (auxMont.size() + M->getMemoryAdress(this->stringToHex(this->mont.find(auxVector.at(i))->second)).size()); l++) {
+														auxMont_count.append("0");
+													}
+													auxMont_count = auxMont_count.append(M->getMemoryAdress(this->stringToHex(this->mont.find(auxVector.at(i))->second)));
+													monta << auxMont_count;
+
 												}
-												auxMont_count = auxMont_count.append(this->mont.find(auxVector.at(i))->second);
-												monta << auxMont_count;
 											}
 										}
 									}
@@ -406,4 +420,19 @@ string Montador::DecToBin(int number)
 		return DecToBin(number / 2) + "0";
 	else
 		return DecToBin(number / 2) + "1";
+}
+
+string Montador::stringToHex(const std::string& input) {
+	static const char* const lut = "0123456789ABCDEF";
+	size_t len = input.length();
+
+	std::string output;
+	output.reserve(2 * len);
+	for (size_t i = 0; i < len; ++i)
+	{
+		const unsigned char c = input[i];
+		output.push_back(lut[c >> 4]);
+		output.push_back(lut[c & 15]);
+	}
+	return output;
 }

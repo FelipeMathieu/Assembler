@@ -12,6 +12,8 @@ public:
 	bool sendAdress(string adress, Memoria *m);
 	string getDataBus() {
 		return this->dataBus;
-	}
+	};
+	void printAddressBus();
+	void setDataBus(string value);
 };
 

@@ -27,6 +27,7 @@ public:
 	void setCarryFlag(int value);
 	void setOverFlag(int value);
 	void setUnderFlag(int value);
+	int getFlagValue(string reg);
 	string DecToBin(int number)
 	{
 		if (number == 0) return "0";

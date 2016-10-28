@@ -29,6 +29,7 @@ private:
 	bool isNum(string p);
 	inline bool isInteger(const std::string & s);
 	string DecToBin(int number);
+	string stringToHex(const std::string& input);
 
 public:
 	Montador(Dicionario *D);

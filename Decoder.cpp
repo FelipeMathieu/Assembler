@@ -19,7 +19,7 @@ string Decoder::DecToBin(int number)
 		return DecToBin(number / 2) + "1";
 }
 
-void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg, ULA *ula) {
+void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg, ULA *ula, Interpretador *it, adressDataBus *ad, instructQueue *q) {
 	this->value = iq;
 
 	if (this->value.substr(0, 5) == "00001") {//MOV1 IMEDIATO -> REG
@@ -57,11 +57,24 @@ void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg,
 
 	if (this->value.substr(0, 5) == "00011") {//MOV3 REG -> VAR
 
+		int i = 5;
+		string a = "";
+
 		busI->printBusInt();
 		Reg->printRegs();
-		busI->setDataBus(this->DecToBin(Reg->getRegisterValue(this->value.substr(5, 4))));
+		busI->setDataBus(Reg->getRegisterLogValue(this->value.substr(12, 4)));
 		busI->printBusInt();
-		m->setValue(this->value.substr(9, 7), busI->getDataBus());
+		while (i < 16) {
+			a = a + this->value.at(i);
+			if (!m->isReserved(a) && m->getValue(a) != "") {
+				ad->printAddressBus();
+				ad->setDataBus(busI->getDataBus());
+				m->setValue(a, ad->getDataBus());
+				break;
+			}
+			i += 1;
+		}
+		a = "";
 		busI->clearBus();
 		busI->printBusInt();
 		Reg->printRegs();
@@ -79,7 +92,11 @@ void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg,
 		while (i > 0) {
 			a = this->value.at(i) + a;
 			if (!m->isReserved(a)) {
-				busI->setDataBus(m->getValue(a));
+				ad->setDataBus(m->getValue(a));
+				ad->printAddressBus();
+
+				busI->setDataBus(ad->getDataBus());
+				busI->printBusInt();
 				break;
 			}
 			i -= 1;
@@ -97,11 +114,28 @@ void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg,
 
 	if (this->value.substr(0, 5) == "00101") {//MOV5 - IMEDIATO -> VARIAVEL
 
+		int aux = Reg->getRegisterValue("0011");
+		
+		Reg->setRegisterValue("0011", this->value, m);
+
+		int i = 5;
+		string a = "";
+
 		busI->printBusInt();
-		Reg->printRegs();
-		busI->setDataBus(this->value.substr(5, 4));
+		busI->setDataBus(Reg->getRegisterLogValue("0011"));
 		busI->printBusInt();
-		m->setValue(this->value.substr(9, 7), busI->getDataBus());
+		while (i < 16) {
+			a = a + this->value.at(i);
+			if (!m->isReserved(a) && m->getValue(a) != "") {
+				ad->printAddressBus();
+				ad->setDataBus(busI->getDataBus());
+				m->setValue(a, ad->getDataBus());
+				break;
+			}
+			i += 1;
+		}
+		a = "";
+		Reg->setRegisterValue("0011", this->DecToBin(aux), m);
 		busI->clearBus();
 		busI->printBusInt();
 		Reg->printRegs();
@@ -113,14 +147,25 @@ void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg,
 
 		busI->printBusInt();
 		Reg->printRegs();
-		busI->setDataBus(this->DecToBin(Reg->getRegisterValue(this->value.substr(12, 4))));
+		busI->setDataBus(this->DecToBin(Reg->getRegisterValue(this->value.substr(5, 4))));
 		busI->printBusInt();
 
-		ula->add(this->value.substr(12, 4), busI->getDataBus(), m, Reg);
+		ula->setTempReg1(busI->getDataBus());
 		busI->clearBus();
 
 		busI->printBusInt();
+
+		busI->setDataBus(this->DecToBin(Reg->getRegisterValue(this->value.substr(12, 4))));
+		busI->printBusInt();
+
+		ula->setTempReg2(busI->getDataBus());
+		busI->clearBus();
+
+		ula->add(this->value.substr(5, 4), m, Reg);
+
+		busI->printBusInt();
 		Reg->printRegs();
+
 		return;
 	}
 
@@ -128,14 +173,25 @@ void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg,
 
 		busI->printBusInt();
 		Reg->printRegs();
-		busI->setDataBus(this->DecToBin(Reg->getRegisterValue(this->value.substr(12, 4))));
+		busI->setDataBus(this->DecToBin(Reg->getRegisterValue(this->value.substr(5, 4))));
 		busI->printBusInt();
 
-		ula->sub(this->value.substr(12, 4), busI->getDataBus(), m, Reg);
+		ula->setTempReg1(busI->getDataBus());
 		busI->clearBus();
 
 		busI->printBusInt();
+
+		busI->setDataBus(this->DecToBin(Reg->getRegisterValue(this->value.substr(12, 4))));
+		busI->printBusInt();
+
+		ula->setTempReg2(busI->getDataBus());
+		busI->clearBus();
+
+		ula->sub(this->value.substr(5, 4), m, Reg);
+
+		busI->printBusInt();
 		Reg->printRegs();
+
 		return;
 	}
 
@@ -234,7 +290,7 @@ void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg,
 		busI->printBusInt();
 		Reg->printRegsLog();
 
-		ula->and(this->value.substr(5, 4), m, Reg);
+		ula-> and (this->value.substr(5, 4), m, Reg);
 
 		busI->printBusInt();
 		Reg->printRegsLog();
@@ -263,7 +319,7 @@ void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg,
 		busI->printBusInt();
 		Reg->printRegsLog();
 
-		ula->or(this->value.substr(5, 4), m, Reg);
+		ula-> or (this->value.substr(5, 4), m, Reg);
 
 		busI->printBusInt();
 		Reg->printRegsLog();
@@ -287,26 +343,79 @@ void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg,
 	}
 
 	if (this->value.substr(0, 5) == "10000") {//JNE
+		string a = "00000";
+		int j = 0;
+		if (Reg->getFlagValue("ZF") == 1) {
+			a.append(this->value.substr(5, 11));
+			for (int i = 0; i < it->getCodeOrder().size(); i++) {
+				if (it->getCodeOrder().at(i) == a) {
+					j = i;
+					q->setControllerQueue(j);
+					q->setQueue(it, ad, m);
+					break;
+				}
+			}
+		}
 
 		return;
 	}
 
 	if (this->value.substr(0, 5) == "10001") {//JE
+		string a = "00000";
+		int j = 0;
+		if (Reg->getFlagValue("ZF") == 0) {
+			a.append(this->value.substr(5, 11));
+			for (int i = 0; i < it->getCodeOrder().size(); i++) {
+				if (it->getCodeOrder().at(i) == a) {
+					j = i;
+					q->setControllerQueue(j);
+					q->setQueue(it, ad, m);
+					break;
+				}
+			}
+		}
 
 		return;
 	}
 
 	if (this->value.substr(0, 5) == "10010") {//JZ
+		string a = "00000";
+		int j = 0;
+		if (Reg->getFlagValue("ZF") == 0) {
+			a.append(this->value.substr(5, 11));
+			for (int i = 0; i < it->getCodeOrder().size(); i++) {
+				if (it->getCodeOrder().at(i) == a) {
+					j = i;
+					q->setControllerQueue(j);
+					q->setQueue(it, ad, m);
+					break;
+				}
+			}
+		}
 
 		return;
 	}
 
 	if (this->value.substr(0, 5) == "10011") {//JNZ
+		string a = "00000";
+		int j = 0;
+		if (Reg->getFlagValue("ZF") == 1) {
+			a.append(this->value.substr(5, 11));
+			for (int i = 0; i < it->getCodeOrder().size(); i++) {
+				if (it->getCodeOrder().at(i) == a) {
+					j = i;
+					q->setControllerQueue(j);
+					q->setQueue(it, ad, m);
+					break;
+				}
+			}
+		}
 
 		return;
 	}
 
 	if (this->value.substr(0, 2) == "11") {//CMP
+		int aux = 0;
 
 		busI->printBusInt();
 		Reg->printRegs();
@@ -324,12 +433,20 @@ void Decoder::decodeElement(string iq, Memoria *m, busInt *busI, Registers *Reg,
 		ula->setTempReg2(busI->getDataBus());
 		busI->clearBus();
 
-		/*if (ula->sutracao() < 0){
-		Reg->setZeroFlag(1);
+		ula->sub(this->value.substr(2, 4), m, Reg);
+
+		busI->printBusInt();
+		Reg->printRegs();
+
+		aux = Reg->getRegisterValue(this->value.substr(2, 4));
+
+		if (aux == 0) {
+			Reg->setZeroFlag(1);
 		}
-		else{
-		Reg->setZeroFlag(0);
-		}*/
+		else {
+			Reg->setZeroFlag(0);
+		}
+
 		return;
 	}
 }
